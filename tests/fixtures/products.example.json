@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "products": [
+    {
+      "id": "example-id-demo-only",
+      "name": "EXAMPLE PRODUCT — DO NOT PUBLISH",
+      "description": "<p>Local fixture to verify the catalogue renderer. This is not a real ELDOVANT release.</p>",
+      "custom_summary": "Temporary offline validation fixture.",
+      "published": true,
+      "deleted": false,
+      "require_shipping": false,
+      "price": 1900,
+      "currency": "eur",
+      "short_url": "https://example.gumroad.com/l/demo-only",
+      "thumbnail_url": "https://public-files.gumroad.com/example-placeholder.jpg",
+      "tags": ["Digital edition"]
+    }
+  ]
+}

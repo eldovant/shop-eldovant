@@ -1,0 +1,20 @@
+ELDOVANT — Collegamento shop.eldovant.com a Cloudflare Pages mantenendo DNS Register.it
+
+NON cambiare i nameserver del dominio eldovant.com.
+NON migrare o trasferire il sito principale.
+
+1) Crea un progetto Cloudflare Pages collegato al repository eldovant-shop.
+   Production branch: main
+   Framework preset: None
+   Build command: sh build.sh
+   Build output directory: dist
+2) Leggi il sottodominio assegnato al progetto: esempio eldovant-shop.pages.dev
+3) Nel progetto Cloudflare: Custom domains -> Set up a domain -> shop.eldovant.com
+4) Nel pannello DNS AUTOREVOLE (Register.it, se usa i suoi nameserver) modifica/crea solo:
+   Tipo CNAME
+   Host shop
+   Destinazione <nome-reale-progetto>.pages.dev
+   TTL 3600 o default
+5) Verifica che shop.eldovant.com funzioni in HTTPS e che eldovant.com e www restino invariati.
+
+Fonte ufficiale: https://developers.cloudflare.com/pages/configuration/custom-domains/
