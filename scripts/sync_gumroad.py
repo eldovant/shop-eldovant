@@ -199,7 +199,7 @@ def build_site(project_root, destination, products):
     if destination.exists():
         shutil.rmtree(destination)
     destination.mkdir(parents=True)
-    for filename in ("index.html", ".nojekyll", "CNAME"):
+    for filename in ("index.html", ".nojekyll"):
         file = project_root / filename
         if file.is_file():
             shutil.copy2(file, destination / filename)
