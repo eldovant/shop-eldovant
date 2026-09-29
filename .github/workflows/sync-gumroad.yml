@@ -1,0 +1,53 @@
+name: Sync Gumroad products every five minutes
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'eldovant-data.js'
+  schedule:
+    # Every 5 min, intentionally staggered off the top of the hour (UTC).
+    # GitHub schedule is best-effort and may be delayed or skipped.
+    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: eldovant-gumroad-catalogue
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Read Gumroad API and update public catalogue only if changed
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify catalogue importer
+        run: python -m unittest discover -s tests -v
+      - name: Fetch published Gumroad products
+        env:
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+          SHOP_REQUIRED_TAG: ${{ vars.SHOP_REQUIRED_TAG }}
+          GUMROAD_EXCLUDE_IDS: ${{ vars.GUMROAD_EXCLUDE_IDS }}
+        run: python scripts/sync_gumroad.py --output build/site
+      - name: Update catalogue only when its content has changed
+        run: |
+          cp build/site/eldovant-data.js eldovant-data.js
+          if git diff --quiet -- eldovant-data.js; then
+            echo 'No product changes: skip commit and deployment.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add eldovant-data.js
+          git commit -m 'Sync published Gumroad products [ELDOVANT]'
+          git push origin HEAD:main
+          echo 'Catalogue changed: committed data. Git integration can now deploy.'
